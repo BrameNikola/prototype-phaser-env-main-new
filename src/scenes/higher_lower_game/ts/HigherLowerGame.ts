@@ -5,6 +5,7 @@ enum GameMode {
   classic,
   timed,
   targeted,
+  targetTimedHybrid,
 }
 
 export default class HigherLowerGame extends Phaser.Scene {
@@ -14,10 +15,11 @@ export default class HigherLowerGame extends Phaser.Scene {
   promptText!: Phaser.GameObjects.Text;
   gameItems!: HigherLowerGameItems;
   timer!: number;
-  timerText!: Phaser.GameObjects.Text;
+  secondaryText!: Phaser.GameObjects.Text;
   timerInterval!: NodeJS.Timer;
-  gameMode = GameMode.targeted;
+  gameMode = GameMode.targetTimedHybrid;
   targetAmount!: number;
+  targetText!: Phaser.GameObjects.Text;
 
   constructor() {
     super("MainGame");
@@ -69,14 +71,45 @@ export default class HigherLowerGame extends Phaser.Scene {
     this.input.on("gameobjectdown", this.handleMouseDown, this);
     this.input.on("pointerdown", this.restartGame, this);
 
-    if (this.gameMode === GameMode.timed) {
-      this.timer = 10;
-      this.timerText = this.add.text(200, 16, "time remaining: " + this.timer, {
-        fontSize: "32px",
-      });
-      this.timerInterval = setInterval(this.timerCountdown, 1000);
-    } else if (this.gameMode === GameMode.targeted) {
-      this.targetAmount = 10;
+    switch (this.gameMode) {
+      case GameMode.timed:
+        this.timer = 10;
+        this.secondaryText = this.add.text(
+          200,
+          16,
+          "time remaining: " + this.timer,
+          {
+            fontSize: "32px",
+          }
+        );
+        this.timerInterval = setInterval(() => this.timerCountdown(), 1000);
+        break;
+
+      case GameMode.targeted:
+        this.targetAmount = 2;
+        this.secondaryText = this.add.text(
+          200,
+          16,
+          "target: " + this.targetAmount,
+          {
+            fontSize: "32px",
+          }
+        );
+        break;
+
+      case GameMode.targetTimedHybrid:
+        this.timer = 10;
+        this.secondaryText = this.add.text(
+          200,
+          16,
+          "time remaining: " + this.timer,
+          {
+            fontSize: "32px",
+          }
+        );
+        this.targetAmount = 2;
+        this.timerInterval = setInterval(() => this.timerCountdown(), 1000);
+        break;
     }
   }
 
@@ -94,7 +127,10 @@ export default class HigherLowerGame extends Phaser.Scene {
         this.score++;
         this.scoreText.setText("score: " + this.score);
         this.gameItems.generateItemsOnScreen();
-        if (this.gameMode === GameMode.targeted) {
+        if (
+          this.gameMode === GameMode.targeted ||
+          this.gameMode === GameMode.targetTimedHybrid
+        ) {
           if (this.score >= this.targetAmount) {
             this.handleVictory();
           }
@@ -119,7 +155,7 @@ export default class HigherLowerGame extends Phaser.Scene {
     this.promptText.setText("");
     this.add.text(140, 160, "Game Over!\nYour score is: " + this.score, {
       fontSize: "50px",
-      color: "#fff",
+      color: "#f00",
     });
     this.gameOver = true;
   }
@@ -134,6 +170,7 @@ export default class HigherLowerGame extends Phaser.Scene {
       fontSize: "50px",
       color: "#0f0",
     });
+    this.secondaryText.setText("");
     this.gameOver = true;
   }
 
@@ -166,7 +203,7 @@ export default class HigherLowerGame extends Phaser.Scene {
   timerCountdown = () => {
     if (this.timer > 0) {
       this.timer--;
-      this.timerText.setText("time remaining: " + this.timer);
+      this.secondaryText.setText("time remaining: " + this.timer);
     } else {
       this.handleGameOver();
     }
