@@ -4,7 +4,7 @@ import HigherLowerGameItem from "./HigherLowerGameItem";
 enum GameMode {
   classic,
   timed,
-  specific,
+  targeted,
 }
 
 export default class HigherLowerGame extends Phaser.Scene {
@@ -16,7 +16,8 @@ export default class HigherLowerGame extends Phaser.Scene {
   timer!: number;
   timerText!: Phaser.GameObjects.Text;
   timerInterval!: NodeJS.Timer;
-  gameMode = GameMode.timed;
+  gameMode = GameMode.targeted;
+  targetAmount!: number;
 
   constructor() {
     super("MainGame");
@@ -74,6 +75,8 @@ export default class HigherLowerGame extends Phaser.Scene {
         fontSize: "32px",
       });
       this.timerInterval = setInterval(this.timerCountdown, 1000);
+    } else if (this.gameMode === GameMode.targeted) {
+      this.targetAmount = 10;
     }
   }
 
@@ -91,6 +94,11 @@ export default class HigherLowerGame extends Phaser.Scene {
         this.score++;
         this.scoreText.setText("score: " + this.score);
         this.gameItems.generateItemsOnScreen();
+        if (this.gameMode === GameMode.targeted) {
+          if (this.score >= this.targetAmount) {
+            this.handleVictory();
+          }
+        }
       } else {
         if (this.gameMode === GameMode.timed) {
           this.score--;
@@ -112,6 +120,19 @@ export default class HigherLowerGame extends Phaser.Scene {
     this.add.text(140, 160, "Game Over!\nYour score is: " + this.score, {
       fontSize: "50px",
       color: "#fff",
+    });
+    this.gameOver = true;
+  }
+
+  handleVictory() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+    this.scoreText.setText("");
+    this.promptText.setText("");
+    this.add.text(140, 160, "Good Job! You Win!!!", {
+      fontSize: "50px",
+      color: "#0f0",
     });
     this.gameOver = true;
   }
