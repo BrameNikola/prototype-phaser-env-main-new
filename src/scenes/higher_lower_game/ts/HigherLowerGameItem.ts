@@ -1,3 +1,5 @@
+import Phaser from "phaser";
+
 export default class HigherLowerGameItem extends Phaser.GameObjects.Sprite {
   value: number;
   constructor(

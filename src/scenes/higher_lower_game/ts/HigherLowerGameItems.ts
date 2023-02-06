@@ -1,3 +1,4 @@
+import Phaser from "phaser";
 import HigherLowerGameItem from "./HigherLowerGameItem";
 
 export default class HigherLowerGameItems extends Phaser.GameObjects.Group {

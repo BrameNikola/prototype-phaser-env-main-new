@@ -8,11 +8,15 @@ enum GameMode {
 }
 
 export default class HigherLowerGame extends Phaser.Scene {
-  private gameOver!: boolean;
-  private score!: number;
-  private scoreText!: Phaser.GameObjects.Text;
-  private promptText!: Phaser.GameObjects.Text;
-  private gameItems!: HigherLowerGameItems;
+  gameOver!: boolean;
+  score!: number;
+  scoreText!: Phaser.GameObjects.Text;
+  promptText!: Phaser.GameObjects.Text;
+  gameItems!: HigherLowerGameItems;
+  timer!: number;
+  timerText!: Phaser.GameObjects.Text;
+  timerInterval!: NodeJS.Timer;
+  gameMode = GameMode.timed;
 
   constructor() {
     super("MainGame");
@@ -63,6 +67,14 @@ export default class HigherLowerGame extends Phaser.Scene {
     this.input.on("gameobjectout", this.handleMouseOut, this);
     this.input.on("gameobjectdown", this.handleMouseDown, this);
     this.input.on("pointerdown", this.restartGame, this);
+
+    if (this.gameMode === GameMode.timed) {
+      this.timer = 10;
+      this.timerText = this.add.text(200, 16, "time remaining: " + this.timer, {
+        fontSize: "32px",
+      });
+      this.timerInterval = setInterval(this.timerCountdown, 1000);
+    }
   }
 
   handleMouseUp(
@@ -80,20 +92,28 @@ export default class HigherLowerGame extends Phaser.Scene {
         this.scoreText.setText("score: " + this.score);
         this.gameItems.generateItemsOnScreen();
       } else {
-        this.scoreText.setText("");
-        this.promptText.setText("");
-        this.add.text(
-          140,
-          160,
-          "You have failed!\nYour score is: " + this.score,
-          {
-            fontSize: "50px",
-            color: "#f00",
-          }
-        );
-        this.gameOver = true;
+        if (this.gameMode === GameMode.timed) {
+          this.score--;
+          this.scoreText.setText("score: " + this.score);
+          this.gameItems.generateItemsOnScreen();
+        } else {
+          this.handleGameOver();
+        }
       }
     }
+  }
+
+  handleGameOver() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+    this.scoreText.setText("");
+    this.promptText.setText("");
+    this.add.text(140, 160, "Game Over!\nYour score is: " + this.score, {
+      fontSize: "50px",
+      color: "#fff",
+    });
+    this.gameOver = true;
   }
 
   handleMouseDown(
@@ -122,5 +142,12 @@ export default class HigherLowerGame extends Phaser.Scene {
     }
   }
 
-  timerCountdown() {}
+  timerCountdown = () => {
+    if (this.timer > 0) {
+      this.timer--;
+      this.timerText.setText("time remaining: " + this.timer);
+    } else {
+      this.handleGameOver();
+    }
+  };
 }
