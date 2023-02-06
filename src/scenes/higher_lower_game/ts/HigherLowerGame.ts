@@ -1,33 +1,52 @@
 import HigherLowerGameItems from "./HigherLowerGameItems";
 import HigherLowerGameItem from "./HigherLowerGameItem";
 
+enum GameMode {
+  classic,
+  timed,
+  specific,
+}
+
 export default class HigherLowerGame extends Phaser.Scene {
+  private gameOver!: boolean;
+  private score!: number;
+  private scoreText!: Phaser.GameObjects.Text;
+  private promptText!: Phaser.GameObjects.Text;
+  private gameItems!: HigherLowerGameItems;
+
   constructor() {
     super("MainGame");
   }
 
   preload() {
-    this.load.image("background", "background.png");
-    this.load.image("1din", "assets/1-din.png");
-    this.load.image("2din", "assets/2-din.png");
-    this.load.image("5din", "assets/5-din.png");
-    this.load.image("10din", "assets/10-din.png");
-    this.load.image("20din", "assets/20-din.png");
-    this.load.image("10din-paper", "assets/10-din-paper.png");
-    this.load.image("20din-paper", "assets/20-din-paper.png");
-    this.load.image("100din-paper", "assets/100-din-paper.png");
-    this.load.image("200din-paper", "assets/200-din-paper.png");
-    this.load.image("500din-paper", "assets/500-din-paper.png");
+    const images = [
+      "background",
+      "1din",
+      "2din",
+      "5din",
+      "10din",
+      "20din",
+      "10din-paper",
+      "20din-paper",
+      "100din-paper",
+      "200din-paper",
+      "500din-paper",
+    ];
+
+    for (const image of images) {
+      this.load.image(image, `assets/${image}.png`);
+    }
   }
 
   create() {
-    let gameOver = false;
-    let score = 0;
-    const scoreText = this.add.text(16, 16, "score: 0", {
+    this.gameOver = false;
+    this.score = 0;
+
+    this.scoreText = this.add.text(16, 16, "score: 0", {
       fontSize: "32px",
     });
 
-    const promptText = this.add.text(
+    this.promptText = this.add.text(
       25,
       80,
       "Click on the item you think has bigger value:",
@@ -36,70 +55,72 @@ export default class HigherLowerGame extends Phaser.Scene {
       }
     );
 
-    const gameItems = new HigherLowerGameItems(this);
-    gameItems.initiate();
+    this.gameItems = new HigherLowerGameItems(this);
+    this.gameItems.initiate();
 
-    this.input
-      .setHitArea(gameItems.getChildren())
-      .on(
-        "gameobjectup",
-        (pointer: Phaser.Input.Pointer, gameObject: HigherLowerGameItem) => {
-          if (!gameOver) {
-            gameObject.clearTint();
-            gameObject.setScale(0.3);
-            if (
-              gameObject.value > gameItems.gameItemsOnScreen[0].value ||
-              gameObject.value > gameItems.gameItemsOnScreen[1].value
-            ) {
-              score++;
-              scoreText.setText("score: " + score);
-              gameItems.generateItemsOnScreen();
-            } else {
-              scoreText.setText("");
-              promptText.setText("");
-              this.add.text(
-                140,
-                160,
-                "You have failed!\nYour score is: " + score,
-                {
-                  fontSize: "50px",
-                  color: "#f00",
-                }
-              );
-              gameOver = true;
-            }
-          }
-        }
-      );
-
-    this.input
-      .setHitArea(gameItems.getChildren())
-      .on(
-        "gameobjectout",
-        (pointer: Phaser.Input.Pointer, gameObject: HigherLowerGameItem) => {
-          if (!gameOver) {
-            gameObject.clearTint();
-            gameObject.setScale(0.3);
-          }
-        }
-      );
-
-    this.input
-      .setHitArea(gameItems.getChildren())
-      .on(
-        "gameobjectdown",
-        (pointer: Phaser.Input.Pointer, gameObject: HigherLowerGameItem) => {
-          if (!gameOver) {
-            gameObject.setTint(0xdddddd);
-            gameObject.setScale(0.28);
-          }
-        }
-      );
-
-    this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
-      if (gameOver) {
-        this.scene.start("MainGame");
-      }
-    });
+    this.input.setHitArea(this.gameItems.getChildren());
+    this.input.on("gameobjectup", this.handleMouseUp, this);
+    this.input.on("gameobjectout", this.handleMouseOut, this);
+    this.input.on("gameobjectdown", this.handleMouseDown, this);
+    this.input.on("pointerdown", this.restartGame, this);
   }
+
+  handleMouseUp(
+    pointer: Phaser.Input.Pointer,
+    gameObject: HigherLowerGameItem
+  ) {
+    if (!this.gameOver) {
+      gameObject.clearTint();
+      gameObject.setScale(0.3);
+      if (
+        gameObject.value > this.gameItems.gameItemsOnScreen[0].value ||
+        gameObject.value > this.gameItems.gameItemsOnScreen[1].value
+      ) {
+        this.score++;
+        this.scoreText.setText("score: " + this.score);
+        this.gameItems.generateItemsOnScreen();
+      } else {
+        this.scoreText.setText("");
+        this.promptText.setText("");
+        this.add.text(
+          140,
+          160,
+          "You have failed!\nYour score is: " + this.score,
+          {
+            fontSize: "50px",
+            color: "#f00",
+          }
+        );
+        this.gameOver = true;
+      }
+    }
+  }
+
+  handleMouseDown(
+    pointer: Phaser.Input.Pointer,
+    gameObject: HigherLowerGameItem
+  ) {
+    if (!this.gameOver) {
+      gameObject.setTint(0xdddddd);
+      gameObject.setScale(0.28);
+    }
+  }
+
+  handleMouseOut(
+    pointer: Phaser.Input.Pointer,
+    gameObject: HigherLowerGameItem
+  ) {
+    if (!this.gameOver) {
+      gameObject.clearTint();
+      gameObject.setScale(0.3);
+    }
+  }
+
+  restartGame() {
+    if (this.gameOver) {
+      this.scene.start("MainGame");
+    }
+  }
+
+  timerCountdown() {}
 }
