@@ -17,7 +17,7 @@ export default class HigherLowerGame extends Phaser.Scene {
   timer!: number;
   secondaryText!: Phaser.GameObjects.Text;
   timerInterval!: NodeJS.Timer;
-  gameMode = GameMode.targetTimedHybrid;
+  gameMode = GameMode.targeted;
   targetAmount!: number;
   targetText!: Phaser.GameObjects.Text;
 

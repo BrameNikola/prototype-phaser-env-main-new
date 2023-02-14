@@ -2,14 +2,20 @@ import Phaser from "phaser";
 import HigherLowerGameItem from "./HigherLowerGameItem";
 
 export default class HigherLowerGameItems extends Phaser.GameObjects.Group {
-  gameItemsOnScreen: Array<HigherLowerGameItem>;
+  gameItemsOnScreen: HigherLowerGameItem[] = [];
 
   constructor(scene: Phaser.Scene) {
     super(scene);
-    this.gameItemsOnScreen = [];
+    this.initiate();
   }
 
   initiate() {
+    this.addGameItems();
+    this.initializeGameItems();
+    this.generateItemsOnScreen();
+  }
+
+  addGameItems() {
     this.addMultiple([
       new HigherLowerGameItem(this.scene, 700, 700, "1din", 1),
       new HigherLowerGameItem(this.scene, 700, 700, "2din", 2),
@@ -22,13 +28,12 @@ export default class HigherLowerGameItems extends Phaser.GameObjects.Group {
       new HigherLowerGameItem(this.scene, 700, 700, "200din-paper", 200),
       new HigherLowerGameItem(this.scene, 700, 700, "500din-paper", 500),
     ]);
+  }
 
-    for (let i = 0; i < this.getChildren().length; i++) {
-      let gameitem = this.getChildren()[i] as HigherLowerGameItem;
-      gameitem.initiate();
-    }
-
-    this.generateItemsOnScreen();
+  initializeGameItems() {
+    this.getChildren().forEach((gameItem: Phaser.GameObjects.GameObject) => {
+      gameItem as HigherLowerGameItem;
+    });
   }
 
   generateItemsOnScreen() {
