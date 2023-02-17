@@ -28,8 +28,10 @@ export default class HigherLowerGame extends Phaser.Scene {
   }
 
   create() {
+    const gameCustomization = JSON.parse(fakeJson);
+
     clearInterval(this.timerInterval);
-    this.gameMode = JSON.parse(fakeJson).gameMode as GameMode;
+    this.gameMode = gameCustomization.gameMode as GameMode;
     this.gameOver = false;
     this.score = 0;
 
@@ -57,7 +59,7 @@ export default class HigherLowerGame extends Phaser.Scene {
 
     switch (this.gameMode) {
       case GameMode.timed:
-        this.timer = 10;
+        this.timer = gameCustomization.gameSettings.timer;
         this.secondaryText = this.add.text(
           200,
           16,
@@ -70,7 +72,7 @@ export default class HigherLowerGame extends Phaser.Scene {
         break;
 
       case GameMode.targeted:
-        this.targetAmount = 2;
+        this.targetAmount = gameCustomization.gameSettings.targetedAmount;
         this.secondaryText = this.add.text(
           200,
           16,
@@ -82,7 +84,7 @@ export default class HigherLowerGame extends Phaser.Scene {
         break;
 
       case GameMode.targetTimedHybrid:
-        this.timer = 10;
+        this.timer = gameCustomization.gameSettings.timer;
         this.secondaryText = this.add.text(
           200,
           16,
@@ -91,7 +93,7 @@ export default class HigherLowerGame extends Phaser.Scene {
             fontSize: "32px",
           }
         );
-        this.targetAmount = 2;
+        this.targetAmount = gameCustomization.gameSettings.targetedAmount;
         this.timerInterval = setInterval(() => this.timerCountdown(), 1000);
         break;
     }
