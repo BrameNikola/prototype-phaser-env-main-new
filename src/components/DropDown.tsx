@@ -4,7 +4,7 @@ const DropDown = (props: any) => {
       <label htmlFor={props.key} key={props.key}>
         {props.label}
       </label>
-      <select>
+      <select onChange={props.handleChange}>
         {props.items.map((item: any) => (
           <option value={item} key={item}>
             {item}

@@ -1,13 +1,7 @@
 import HigherLowerGameItems from "./HigherLowerGameItems";
 import HigherLowerGameItem from "./HigherLowerGameItem";
 import fetchedJson from "./dummy_json_items/dummy_items.json";
-
-enum GameMode {
-  classic = "classic",
-  timed = "timed",
-  targeted = "targeted",
-  targetTimedHybrid = "targetTimedHybrid",
-}
+import GameMode from "./HigherLowerGameEnum";
 
 export default class HigherLowerGame extends Phaser.Scene {
   gameOver!: boolean;
@@ -27,23 +21,6 @@ export default class HigherLowerGame extends Phaser.Scene {
   }
 
   preload() {
-    // const images = [
-    //   "background",
-    //   "1din",
-    //   "2din",
-    //   "5din",
-    //   "10din",
-    //   "20din",
-    //   "10din-paper",
-    //   "20din-paper",
-    //   "100din-paper",
-    //   "200din-paper",
-    //   "500din-paper",
-    // ];
-
-    // for (const image of images) {
-    //   this.load.image(image, `assets/${image}.png`);
-    // }
     for (const gameObj of fetchedJson.gameObjects) {
       this.load.image(gameObj.texture, `assets/${gameObj.texture}.png`);
     }
