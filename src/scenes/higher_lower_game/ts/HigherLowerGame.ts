@@ -2,6 +2,7 @@ import HigherLowerGameItems from "./HigherLowerGameItems";
 import HigherLowerGameItem from "./HigherLowerGameItem";
 import fetchedJson from "./dummy_json_items/dummy_items.json";
 import GameMode from "./HigherLowerGameEnum";
+import { fakeJson } from "../../../App";
 
 export default class HigherLowerGame extends Phaser.Scene {
   gameOver!: boolean;
@@ -27,7 +28,8 @@ export default class HigherLowerGame extends Phaser.Scene {
   }
 
   create() {
-    this.gameMode = fetchedJson.gameMode as GameMode;
+    clearInterval(this.timerInterval);
+    this.gameMode = JSON.parse(fakeJson).gameMode as GameMode;
     this.gameOver = false;
     this.score = 0;
 

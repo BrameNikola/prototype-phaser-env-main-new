@@ -5,7 +5,23 @@ import Form from "./components/Form";
 import { useState } from "react";
 import GameMode from "./scenes/higher_lower_game/ts/HigherLowerGameEnum";
 
-function App() {
+export let fakeJson = JSON.stringify({
+  gameObjects: [
+    { texture: "1din", value: 1 },
+    { texture: "2din", value: 2 },
+    { texture: "5din", value: 5 },
+    { texture: "10din", value: 10 },
+    { texture: "20din", value: 20 },
+    { texture: "10din-paper", value: 10 },
+    { texture: "20din-paper", value: 20 },
+    { texture: "100din-paper", value: 100 },
+    { texture: "200din-paper", value: 200 },
+    { texture: "500din-paper", value: 500 },
+  ],
+  gameMode: GameMode.classic,
+});
+
+const App = (props: any) => {
   const [gameMode, setGameMode] = useState("classic");
 
   const handleSelect = (event: React.FormEvent<HTMLInputElement>) => {
@@ -32,6 +48,9 @@ function App() {
       gameMode: gameMode,
     });
     console.log(newJson);
+    console.log(props.game);
+    fakeJson = newJson;
+    props.game.scene.start("MainGame");
   };
 
   return (
@@ -46,6 +65,6 @@ function App() {
       </Form>
     </div>
   );
-}
+};
 
 export default App;

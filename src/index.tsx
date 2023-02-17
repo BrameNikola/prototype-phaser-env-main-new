@@ -4,11 +4,11 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
-import "./PhaserGame";
+import Game from "./PhaserGame";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <App game={Game} />
   </React.StrictMode>,
   document.getElementById("root")
 );
