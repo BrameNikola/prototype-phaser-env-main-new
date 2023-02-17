@@ -3,9 +3,20 @@ import HigherLowerGameItem from "./HigherLowerGameItem";
 
 export default class HigherLowerGameItems extends Phaser.GameObjects.Group {
   gameItemsOnScreen: HigherLowerGameItem[] = [];
+  gameItems: Array<{
+    texture: string;
+    value: number;
+  }>;
 
-  constructor(scene: Phaser.Scene) {
+  constructor(
+    scene: Phaser.Scene,
+    gameItems: Array<{
+      texture: string;
+      value: number;
+    }>
+  ) {
     super(scene);
+    this.gameItems = gameItems;
     this.initiate();
   }
 
@@ -16,18 +27,29 @@ export default class HigherLowerGameItems extends Phaser.GameObjects.Group {
   }
 
   addGameItems() {
-    this.addMultiple([
-      new HigherLowerGameItem(this.scene, 700, 700, "1din", 1),
-      new HigherLowerGameItem(this.scene, 700, 700, "2din", 2),
-      new HigherLowerGameItem(this.scene, 700, 700, "5din", 5),
-      new HigherLowerGameItem(this.scene, 700, 700, "10din", 10),
-      new HigherLowerGameItem(this.scene, 700, 700, "20din", 20),
-      new HigherLowerGameItem(this.scene, 700, 700, "10din-paper", 10),
-      new HigherLowerGameItem(this.scene, 700, 700, "20din-paper", 20),
-      new HigherLowerGameItem(this.scene, 700, 700, "100din-paper", 100),
-      new HigherLowerGameItem(this.scene, 700, 700, "200din-paper", 200),
-      new HigherLowerGameItem(this.scene, 700, 700, "500din-paper", 500),
-    ]);
+    for (const gameItem of this.gameItems) {
+      this.add(
+        new HigherLowerGameItem(
+          this.scene,
+          700,
+          700,
+          gameItem.texture,
+          gameItem.value
+        )
+      );
+    }
+    // this.addMultiple([
+    //   new HigherLowerGameItem(this.scene, 700, 700, "1din", 1),
+    //   new HigherLowerGameItem(this.scene, 700, 700, "2din", 2),
+    //   new HigherLowerGameItem(this.scene, 700, 700, "5din", 5),
+    //   new HigherLowerGameItem(this.scene, 700, 700, "10din", 10),
+    //   new HigherLowerGameItem(this.scene, 700, 700, "20din", 20),
+    //   new HigherLowerGameItem(this.scene, 700, 700, "10din-paper", 10),
+    //   new HigherLowerGameItem(this.scene, 700, 700, "20din-paper", 20),
+    //   new HigherLowerGameItem(this.scene, 700, 700, "100din-paper", 100),
+    //   new HigherLowerGameItem(this.scene, 700, 700, "200din-paper", 200),
+    //   new HigherLowerGameItem(this.scene, 700, 700, "500din-paper", 500),
+    // ]);
   }
 
   initializeGameItems() {
